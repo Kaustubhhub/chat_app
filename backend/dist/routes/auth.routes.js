@@ -1,20 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const auth_controller_1 = require("../controllers/auth.controller");
 const router = (0, express_1.Router)();
-router.get('/login', (req, res) => {
-    res.json({
-        data: "Logged in suucessfully"
-    });
-});
-router.get('/signup', (req, res) => {
-    res.json({
-        data: "signup in suucessfully"
-    });
-});
-router.get('/logout', (req, res) => {
-    res.json({
-        data: "Logged out suucessfully"
-    });
-});
+router.post('/signup', auth_controller_1.signup);
+router.post('/login', auth_controller_1.login);
+router.post('/logout', auth_controller_1.logout);
 exports.default = router;
