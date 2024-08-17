@@ -4,7 +4,7 @@ import { BACKEND_URL } from "../config";
 
 type AuthUserType = {
 	id: string;
-	fullName: string;
+	fullname: string;
 	email: string;
 	profilePic: string;
 	gender: string;
