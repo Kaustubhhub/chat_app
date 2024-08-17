@@ -1,5 +1,6 @@
 import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { BACKEND_URL } from "../config";
 
 type AuthUserType = {
 	id: string;
@@ -15,7 +16,7 @@ const AuthContext = createContext<{
 	isLoading: boolean;
 }>({
 	authUser: null,
-	setAuthUser: () => {},
+	setAuthUser: () => { },
 	isLoading: true,
 });
 
@@ -32,7 +33,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 	useEffect(() => {
 		const fetchAuthUser = async () => {
 			try {
-				const res = await fetch("/api/auth/me");
+				const res = await fetch(`${BACKEND_URL}/api/auth/me`);
 				const data = await res.json();
 				if (!res.ok) {
 					throw new Error(data.error);
