@@ -103,7 +103,7 @@ export const getUsersForSideBar = async (req: Request, res: Response) => {
             select: {
                 profilePic: true,
                 id: true,
-                username: true
+                fullname: true,
             }
         })
         console.log('users', users);
