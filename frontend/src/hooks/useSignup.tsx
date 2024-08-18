@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { BACKEND_URL } from "../config";
 
 type SignupInputs = {
 	fullname: string;
@@ -18,7 +17,7 @@ const useSignup = () => {
 	const signup = async (inputs: SignupInputs) => {
 		try {
 			setLoading(true);
-			const res = await fetch(`${BACKEND_URL}/api/auth/signup`, {
+			const res = await fetch(`/api/auth/signup`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

@@ -1,33 +1,28 @@
-import express from 'express';
-import cors from 'cors';
-import authRouter from './routes/auth.routes';
-import messagesRouter from './routes/messages.routes';
-import cookieParser from 'cookie-parser';
-import { app, server } from './socket/socket';
-import path from 'path';
-import dotenv from 'dotenv';
+import express from "express";
+import cookieParser from "cookie-parser";
+import path from "path";
+import authRoutes from "./routes/auth.routes"
+import messageRoutes from "./routes/messages.routes"
+import dotenv from "dotenv";
+import { app, server } from "./socket/socket.js";
 dotenv.config();
 
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
+// const __dirname = path.resolve();
 
-// Initialize middlewares
-app.use(cors());
-app.use(express.json());
-app.use(cookieParser());
+app.use(cookieParser()); // for parsing cookies
+app.use(express.json()); // for parsing application/json
 
-// Define routes
-app.use('/api/auth', authRouter);
-app.use('/api/messages', messagesRouter);
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
 
-// Serve frontend static files in production
-if (process.env.NODE_ENV !== 'development') {
-    app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
-    });
+if (process.env.NODE_ENV !== "development") {
+	app.use(express.static(path.join(__dirname, "/frontend/dist")));
+	app.get("*", (req, res) => {
+		res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+	});
 }
 
-// Start the server
-server.listen(port, () => {
-    console.log(`The server is running on port ${port}`);
+server.listen(PORT, () => {
+	console.log("Server is running on port " + PORT);
 });

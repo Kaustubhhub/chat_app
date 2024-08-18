@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { BACKEND_URL } from "../config";
 
 const useLogout = () => {
     const [loading, setLoading] = useState(false);
@@ -10,7 +9,7 @@ const useLogout = () => {
     const logout = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${BACKEND_URL}/api/auth/logout`, {
+            const res = await fetch(`/api/auth/logout`, {
                 method: "POST",
             });
             const data = await res.json();
