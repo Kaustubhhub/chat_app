@@ -5,6 +5,8 @@ import messagesRouter from './routes/messages.routes'
 import cookieParser from 'cookie-parser'
 import { app, server } from './socket/socket'
 import path from 'path'
+import dotenv from "dotenv";
+dotenv.config()
 
 const __dirname = path.resolve();
 

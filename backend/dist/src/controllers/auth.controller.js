@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -16,7 +7,7 @@ exports.getME = exports.logout = exports.login = exports.signup = void 0;
 const db_1 = require("../db");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
-const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const signup = async (req, res) => {
     try {
         const { fullname, username, password, confirmPassword, gender } = req.body;
         console.log('req.body', req.body);
@@ -26,7 +17,7 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (password !== confirmPassword) {
             return res.status(400).json({ error: "password and confirm password must be same." });
         }
-        const existingUser = yield db_1.prisma.user.findFirst({
+        const existingUser = await db_1.prisma.user.findFirst({
             where: {
                 username: username
             }
@@ -36,11 +27,11 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 error: "email already exists"
             });
         }
-        const salt = yield bcryptjs_1.default.genSalt(10);
-        const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
+        const salt = await bcryptjs_1.default.genSalt(10);
+        const hashedPassword = await bcryptjs_1.default.hash(password, salt);
         const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${username}`;
         const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${username}`;
-        const newUser = yield db_1.prisma.user.create({
+        const newUser = await db_1.prisma.user.create({
             data: {
                 fullname,
                 username,
@@ -67,16 +58,16 @@ const signup = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (er) {
         console.log(er);
     }
-});
+};
 exports.signup = signup;
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const login = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = yield db_1.prisma.user.findUnique({ where: { username } });
+        const user = await db_1.prisma.user.findUnique({ where: { username } });
         if (!user) {
             return res.status(400).json({ error: "incorrect credentials." });
         }
-        const isPasswordCorrect = yield bcryptjs_1.default.compare(password, user.password);
+        const isPasswordCorrect = await bcryptjs_1.default.compare(password, user.password);
         if (!isPasswordCorrect) {
             return res.status(400).json({ error: "incorrect credentials." });
         }
@@ -91,9 +82,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         console.log(error);
     }
-});
+};
 exports.login = login;
-const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const logout = async (req, res) => {
     try {
         res.cookie("jwt", "", { maxAge: 0 });
         res.status(200).json({ message: "logged out successfully." });
@@ -102,11 +93,11 @@ const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log('error', error);
         res.status(400).json({ error: "Internal server error." });
     }
-});
+};
 exports.logout = logout;
-const getME = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getME = async (req, res) => {
     try {
-        const user = yield db_1.prisma.user.findUnique({ where: { id: req.user.id } });
+        const user = await db_1.prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({
                 error: "user not found"
@@ -121,5 +112,5 @@ const getME = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (error) {
     }
-});
+};
 exports.getME = getME;
