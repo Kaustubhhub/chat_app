@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessage = void 0;
+exports.getUsersForSideBar = exports.getMessages = exports.sendMessage = void 0;
 const db_1 = require("../db");
+const socket_1 = require("../socket/socket");
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { message } = req.body;
@@ -18,7 +19,7 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const senderId = req.user.id;
         console.log('message', message);
         console.log('receiverId', receiverId);
-        console.log('senderId', senderId);
+        console.log('senderId>>', senderId);
         let conversation = yield db_1.prisma.conversation.findFirst({
             where: {
                 participantIds: {
@@ -56,6 +57,10 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 },
             });
         }
+        const receiverSocketId = (0, socket_1.getReceiverSocketId)(receiverId);
+        if (receiverSocketId) {
+            socket_1.io.to(receiverSocketId).emit("newMessage", newMessage);
+        }
         res.status(201).json(newMessage);
     }
     catch (error) {
@@ -64,3 +69,59 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.sendMessage = sendMessage;
+const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log('Am i here');
+        const { id: userToChatId } = req.params;
+        const senderId = req.user.id;
+        console.log('senderId .....', senderId);
+        const conversation = yield db_1.prisma.conversation.findFirst({
+            where: {
+                participantIds: {
+                    hasEvery: [senderId, userToChatId]
+                }
+            },
+            include: {
+                messages: {
+                    orderBy: {
+                        createdAt: 'asc'
+                    }
+                }
+            }
+        });
+        if (!conversation) {
+            return res.status(200).json([]);
+        }
+        return res.status(200).json(conversation.messages);
+    }
+    catch (error) {
+        console.log('error', error);
+        res.status(500).json({ error: "Internal server Error." });
+    }
+});
+exports.getMessages = getMessages;
+const getUsersForSideBar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.user.id;
+        console.log('getUsersForSideBar', exports.getUsersForSideBar);
+        const users = yield db_1.prisma.user.findMany({
+            where: {
+                id: {
+                    not: userId
+                },
+            },
+            select: {
+                profilePic: true,
+                id: true,
+                fullname: true,
+            }
+        });
+        console.log('users', users);
+        res.status(200).json(users);
+    }
+    catch (error) {
+        console.log('error', error);
+        res.status(500).json({ error: "Internal server Error." });
+    }
+});
+exports.getUsersForSideBar = getUsersForSideBar;
