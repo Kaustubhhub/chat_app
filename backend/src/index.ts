@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 dotenv.config()
 
 const __dirname = path.resolve();
+const port = process.env.PORT || 5000;
 
 // const app = express();
 app.use(cors());
@@ -25,6 +26,6 @@ if (process.env.NODE_ENV !== "development") {
     });
 }
 
-server.listen(5000, () => {
+server.listen(port, () => {
     console.log('The server is running on port 5000')
 })
